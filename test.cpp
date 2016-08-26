@@ -249,13 +249,13 @@ TestResult test_IntersectionOverwrite() {
 
     // de-assign all lanes
     ASSERT(intersection.connectNorth(0, Intersection::LD_INCOMING) == l5);
-    ASSERT(intersection.valid());
+    ASSERT(!intersection.valid());
     ASSERT(intersection.connectEast(0, Intersection::LD_OUTGOING) == l5);
-    ASSERT(intersection.valid());
+    ASSERT(!intersection.valid());
     ASSERT(intersection.connectSouth(0, Intersection::LD_INCOMING) == l5);
-    ASSERT(intersection.valid());
+    ASSERT(!intersection.valid());
     ASSERT(intersection.connectWest(0, Intersection::LD_OUTGOING) == l5);
-    ASSERT(intersection.valid());
+    ASSERT(!intersection.valid());
 
 
     delete l1;

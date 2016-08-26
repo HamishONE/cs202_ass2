@@ -2,50 +2,65 @@
 
 SimpleLane::SimpleLane() {
 
+	// Initialise the front and back pointers to null
 	frontQueue = 0;
 	backQueue = 0;
 }
 
 SimpleLane::~SimpleLane() {
 
-	Node *node, *nextNode = frontQueue;
-
-	while(true) {
-
-		node = nextNode;
-		if (node == 0) break;
-
-		nextNode = node->link;
-		delete node->vehicle;
-		delete node;
-	}
+	// Call delete for first node, others will be deleted recursively
+	delete frontQueue;
 }
 
 const Vehicle* SimpleLane::front() const {
 
+	// If no vehicles in lane return null
 	if (frontQueue == 0) return 0;
-	else return frontQueue->vehicle;
+
+	// Otherwise return the front vehicle
+	else return frontQueue->getVehicle();
+}
+
+const Vehicle* SimpleLane::back() const {
+
+	// If no vehicles in lane return null
+	if (backQueue == 0) return 0;
+
+	// Otherwise return the back vehicle
+	else return backQueue->getVehicle();
 }
 
 void SimpleLane::enqueue(Vehicle* vehicle) {
 
+	// Setup new node with its link set to null
 	Node *newNode = new Node(vehicle, 0);
 
+	// If the lane is currently empty point both the front and back pointers to this node
 	if (frontQueue == 0) {
 		frontQueue = newNode;
 		backQueue = newNode;
 	}
+
+	// Otherwise link the node at the back of the queue to this new node
 	else {
-		backQueue->link = newNode;
+		backQueue->changeLink(newNode);
 		backQueue = newNode;
 	}
 }
 
 Vehicle* SimpleLane::dequeue() {
+
+	// If no vehicles in lane return null
 	if (frontQueue == 0) return 0;
 
-	Vehicle *toReturn = frontQueue->vehicle;
-	frontQueue = frontQueue->link;
+	// Otherwise store the vehicle at the start of the queue to return later
+	Vehicle *toReturn = frontQueue->getVehicle();
+
+	// Set the front of the queue to the second vehicle in the queue
+	frontQueue = frontQueue->getLink();
+
+	// Return the previous front of the queue stored earlier
 	return toReturn;
 }
 
@@ -56,22 +71,39 @@ bool SimpleLane::empty() const {
 
 unsigned int SimpleLane::count() const {
 
-	int counter = 0;
+	// Start at the front of the queue
 	Node *node = frontQueue;
 
-	while(true) {
+	// Loop while the current node is not null
+	int counter = 0;
+	while (node != 0) {
 
-		if (node == 0) break;
-
-		node = node->link;
+		// Get the next node via the link and increment the counter
+		node = node->getLink();
 		counter++;
 	}
 
+	// Once the loop breaks return the counter
 	return counter;
 }
 
-const Vehicle* SimpleLane::back() const {
+/* Implementation of the Node class follows */
 
-	if (backQueue == 0) return 0;
-	else return backQueue->vehicle;
+SimpleLane::Node::Node(Vehicle *v, Node *l) : vehicle(v), link(l) {}
+
+SimpleLane::Node::~Node() {
+	delete link; // will delete nodes recursively
+	delete vehicle;
+}
+
+Vehicle* SimpleLane::Node::getVehicle() const {
+	return vehicle;
+}
+
+SimpleLane::Node* SimpleLane::Node::getLink() const {
+	return link;
+}
+
+void SimpleLane::Node::changeLink(Node *newLink) {
+	link = newLink;
 }

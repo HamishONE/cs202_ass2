@@ -83,24 +83,15 @@ public:
 
 private:
 
-    class LaneWrapper {
-    public:
-    	Lane *lane;
-    	Intersection::LaneDirection direction;
-    	LaneWrapper(Lane *l, Intersection::LaneDirection d) : lane(l), direction(d) {}
-    };
+    // Enumeration type formalizes integer logic for the 4 compass points
+    enum CompassPoint {NORTH=0, EAST=1, SOUTH=2, WEST=3};
 
-    LaneWrapper *northLane;
-    LaneWrapper *eastLane;
-    LaneWrapper *southLane;
-    LaneWrapper *westLane;
+    // Arrays store lane pointer and directions for each compass point
+	Lane *lanes[4];
+	LaneDirection directions[4];
 
-    Lane* connector(Lane* lane, LaneDirection direction, LaneWrapper*& wrapper);
-
-    bool areLeft;
-    bool areStraight;
-    void findTurns(LaneWrapper*& wrapper);
-    void moveVehicle(LaneWrapper*& wrapper);
+	// Helper function to connect lanes
+	Lane* connector(Lane* lane, LaneDirection direction, CompassPoint compass);
 };
 
 #endif /* end of include guard: INTERSECTION_HPP */

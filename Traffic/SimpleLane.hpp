@@ -4,13 +4,6 @@
 #include "Lane.hpp"
 #include "Vehicle.hpp"
 
-class Node {
-public:
-	Node(Vehicle *v, Node * l) : vehicle(v), link(l) {}
-	Vehicle *vehicle;
-	Node *link;
-};
-
 /*
 The SimpleLane class simulates a single lane of a road. It is a FIFO queue for Vehicle objects.
 
@@ -65,6 +58,21 @@ public:
     virtual const Vehicle* back() const;
 
 protected:
+
+    // Helper class to encapsulate a vehicle and a link to another node
+    class Node {
+	public:
+		Node(Vehicle *v, Node *l);
+		~Node();
+		Vehicle* getVehicle() const;
+		Node* getLink() const;
+		void changeLink(Node *newLink);
+	private:
+		Vehicle *vehicle;
+		Node *link;
+	};
+
+    // Pointers to the front and back of the queue
     Node *frontQueue;
     Node *backQueue;
 };

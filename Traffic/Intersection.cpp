@@ -3,79 +3,108 @@
 #include "Lane.hpp"
 
 Intersection::Intersection() {
-	northLane = 0;
-	eastLane = 0;
-	southLane = 0;
-	westLane = 0;
+
+	// Loop through the four lanes and set the pointers to null
+	for (unsigned int i=0; i<4; i++) {
+		lanes[i] = 0;
+	}
 }
 
 
 bool Intersection::valid() {
-	if (northLane && eastLane && southLane && westLane) return true;
-	else return false;
+
+	// Loop through the four lanes and if any are null the intersection is not valid
+	for (unsigned int i=0; i<4; i++) {
+		if (lanes[i] == 0) return false;
+	}
+
+	// Otherwise the intersection is valid
+	return true;
 }
 
-Lane* Intersection::connector(Lane* lane, LaneDirection direction, LaneWrapper*& wrapper) {
-	Lane *toReturn = 0;
-	if (wrapper != 0) toReturn = wrapper->lane;
+// Helper function to connect a lane to the intersection
+Lane* Intersection::connector(Lane* lane, LaneDirection direction, CompassPoint compass) {
 
-	wrapper = new LaneWrapper(lane, direction);
+	// Store the previous lane in this location to return later
+	Lane *toReturn = lanes[compass];
 
+	// Copy the lane pointer and direction into the appropriate arrays
+	lanes[compass] = lane;
+	directions[compass] = direction;
+
+	// Return the previous lane stored above, may be null
 	return toReturn;
 }
 
 Lane* Intersection::connectNorth(Lane* lane, LaneDirection direction) {
-	return connector(lane, direction, northLane);
+	return connector(lane, direction, NORTH);
 }
 
 Lane* Intersection::connectEast(Lane* lane, LaneDirection direction) {
-	return connector(lane, direction, eastLane);
+	return connector(lane, direction, EAST);
 }
 
 Lane* Intersection::connectSouth(Lane* lane, LaneDirection direction) {
-	return connector(lane, direction, southLane);
+	return connector(lane, direction, SOUTH);
 }
 
 Lane* Intersection::connectWest(Lane* lane, LaneDirection direction) {
-	return connector(lane, direction, westLane);
-}
-
-void Intersection::findTurns(LaneWrapper*& wrapper) {
-	if(wrapper->lane->front() == 0 || wrapper->direction == LD_OUTGOING) return;
-
-	if (wrapper->lane->front()->nextTurn() == Vehicle::TD_LEFT) areLeft = true;
-	if (wrapper->lane->front()->nextTurn() == Vehicle::TD_STRAIGHT) areStraight = true;
-}
-
-void Intersection::moveVehicle(LaneWrapper*& wrapper) {
-	if(wrapper->lane->front() == 0 || wrapper->direction == LD_OUTGOING) return;
-
-	if (wrapper->lane->front()->nextTurn() == Vehicle::TD_RIGHT) {
-		if (areLeft || areStraight) return;
-	}
-
-	if (wrapper->lane->front()->nextTurn() == Vehicle::TD_LEFT) {
-		if (areStraight) return;
-	}
-
-	Vehicle *vehicle = wrapper->lane->dequeue();
-
-	//move to appropiate lane
-
-	vehicle->makeTurn();
+	return connector(lane, direction, WEST);
 }
 
 void Intersection::simulate() {
 
-	areLeft = false;
-	areStraight = false;
-	findTurns(northLane);
-	findTurns(eastLane);
-	findTurns(southLane);
-	findTurns(westLane);
+	// Loop through the four lanes and find if any vehicles are turning left or going straight
+	bool areLeft = false, areStraight = false;
+	for (unsigned int i=0; i<4; i++) {
 
-	moveVehicle(northLane);
-	moveVehicle(eastLane);
-	moveVehicle(southLane);
-	moveVehicle(westLane);
+		// If the lane contains no vehicles or is an outgoing street skip to the next lane
+		if(lanes[i]->front() == 0 || directions[i] == LD_OUTGOING) continue;
+
+		// Set booleans as appropriate
+		if (lanes[i]->front()->nextTurn() == Vehicle::TD_LEFT) areLeft = true;
+		if (lanes[i]->front()->nextTurn() == Vehicle::TD_STRAIGHT) areStraight = true;
+	}
+
+	// Loop through the four lanes and process the vehicles
+	for (unsigned int i=0; i<4; i++) {
+
+		// If the lane contains no vehicles or is an outgoing street skip to the next lane
+		if(lanes[i]->front() == 0 || directions[i] == LD_OUTGOING) continue;
+
+		// If the vehicle wants to turn right and there are people going straight or turning
+		// left skip to the next lane
+		if (lanes[i]->front()->nextTurn() == Vehicle::TD_RIGHT) {
+			if (areLeft || areStraight) continue;
+		}
+
+		// If the vehicle wants to turn left and there are people going straight skip to the next lane
+		if (lanes[i]->front()->nextTurn() == Vehicle::TD_LEFT) {
+			if (areStraight) continue;
+		}
+
+		// Otherwise remove the vehicle from the lane
+		Vehicle *vehicle = lanes[i]->dequeue();
+
+		// Find the lane the vehicle wants to turn into
+		unsigned int newLane;
+		switch (vehicle->nextTurn()) {
+		case Vehicle::TD_RIGHT:
+			newLane = i + 3;
+			break;
+		case Vehicle::TD_LEFT:
+			newLane = i + 1;
+			break;
+		case Vehicle::TD_STRAIGHT:
+			newLane = i + 2;
+			break;
+		default:
+			return;
+		}
+		if (newLane > 3) newLane -= 4;
+
+		// Add the vehicle to this lane
+		lanes[newLane]->enqueue(vehicle);
+		vehicle->makeTurn();
+	}
 }
