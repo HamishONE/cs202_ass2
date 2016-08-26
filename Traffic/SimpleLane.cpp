@@ -60,6 +60,9 @@ Vehicle* SimpleLane::dequeue() {
 	// Set the front of the queue to the second vehicle in the queue
 	frontQueue = frontQueue->getLink();
 
+	// If the queue is now empty set the back queue pointer to null
+	if (frontQueue == 0) backQueue = 0;
+
 	// Return the previous front of the queue stored earlier
 	return toReturn;
 }

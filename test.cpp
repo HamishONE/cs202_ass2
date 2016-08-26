@@ -178,6 +178,27 @@ TestResult test_SimpleLaneEnqueue() {
     ASSERT(lane.back() == m1);
     ASSERT(lane.front() == v1);
 
+    ASSERT(lane.dequeue() == v1);
+	ASSERT(!lane.empty())
+	ASSERT(lane.count() == 3)
+	ASSERT(lane.back() == m1);
+	ASSERT(lane.front() == v2);
+	ASSERT(lane.dequeue() == v2);
+	ASSERT(!lane.empty())
+	ASSERT(lane.count() == 2)
+	ASSERT(lane.back() == m1);
+	ASSERT(lane.front() == v3);
+	ASSERT(lane.dequeue() == v3);
+	ASSERT(!lane.empty())
+	ASSERT(lane.count() == 1)
+	ASSERT(lane.back() == m1);
+	ASSERT(lane.front() == m1);
+	ASSERT(lane.dequeue() == m1);
+	ASSERT(lane.empty())
+	ASSERT(lane.count() == 0)
+	ASSERT(lane.back() == 0);
+	ASSERT(lane.front() == 0);
+
     // vehicles should be deleted by the lane
 
     return TR_PASS;
@@ -198,6 +219,76 @@ TestResult test_ExpressLaneInitialState() {
 
     return TR_PASS;
 }
+
+/*
+Test adding vehicles to the SimpleLane.
+*/
+TestResult test_ExpressLaneEnqueue() {
+    ExpressLane lane;
+    Vehicle* v1 = new Vehicle(Vehicle::VT_CAR, 1);
+    Vehicle* v2 = new Vehicle(Vehicle::VT_CAR, 2);
+    Vehicle* v3 = new Vehicle(Vehicle::VT_BUS, 3);
+    Vehicle* m1 = new Vehicle(Vehicle::VT_MOTORCYCLE, 1);
+    Vehicle* m2 = new Vehicle(Vehicle::VT_MOTORCYCLE, 1);
+
+    lane.enqueue(v1);
+    ASSERT(!lane.empty())
+    ASSERT(lane.count() == 1)
+    ASSERT(lane.back() == v1);
+    ASSERT(lane.front() == v1);
+    lane.enqueue(v2);
+    ASSERT(!lane.empty())
+    ASSERT(lane.count() == 2)
+    ASSERT(lane.back() == v2);
+    ASSERT(lane.front() == v1);
+    lane.enqueue(v3);
+    ASSERT(!lane.empty())
+    ASSERT(lane.count() == 3)
+    ASSERT(lane.back() == v3);
+    ASSERT(lane.front() == v1);
+    lane.enqueue(m1);
+    ASSERT(!lane.empty())
+    ASSERT(lane.count() == 4)
+    ASSERT(lane.back() == v3);
+    ASSERT(lane.front() == m1);
+    lane.enqueue(m2);
+	ASSERT(!lane.empty())
+	ASSERT(lane.count() == 5)
+	ASSERT(lane.back() == v3);
+	ASSERT(lane.front() == m1);
+
+	ASSERT(lane.dequeue() == m1);
+	ASSERT(!lane.empty())
+	ASSERT(lane.count() == 4)
+	ASSERT(lane.back() == v3);
+	ASSERT(lane.front() == m2);
+	ASSERT(lane.dequeue() == m2);
+	ASSERT(!lane.empty())
+	ASSERT(lane.count() == 3)
+	ASSERT(lane.back() == v3);
+	ASSERT(lane.front() == v1);
+	ASSERT(lane.dequeue() == v1);
+	ASSERT(!lane.empty())
+	ASSERT(lane.count() == 2)
+	ASSERT(lane.back() == v3);
+	ASSERT(lane.front() == v2);
+	ASSERT(lane.dequeue() == v2);
+	ASSERT(!lane.empty())
+	ASSERT(lane.count() == 1)
+	ASSERT(lane.back() == v3);
+	ASSERT(lane.front() == v3);
+	ASSERT(lane.dequeue() == v3);
+	ASSERT(lane.empty())
+	ASSERT(lane.count() == 0)
+	ASSERT(lane.back() == 0);
+	ASSERT(lane.front() == 0);
+	ASSERT(lane.dequeue() == 0);
+
+    // vehicles should be deleted by the lane
+
+    return TR_PASS;
+}
+
 #endif /*ENABLE_T1_TESTS*/
 
 #ifdef ENABLE_T2_TESTS
@@ -456,6 +547,7 @@ vector<TestResult (*)()> generateTests() {
     tests.push_back(&test_SimpleLaneInitialState);
     tests.push_back(&test_SimpleLaneEnqueue);
     tests.push_back(&test_ExpressLaneInitialState);
+    tests.push_back(&test_ExpressLaneEnqueue);
 #endif /*ENABLE_T1_TESTS*/
 #ifdef ENABLE_T2_TESTS
     tests.push_back(&test_IntersectionConstruction);

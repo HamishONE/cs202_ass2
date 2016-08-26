@@ -24,7 +24,7 @@ void ExpressLane::enqueue(Vehicle* vehicle) {
 
 		// Otherwise loop until the new vehicle is not a motorcycle
 		Node *node = frontQueue;
-		while (node->getVehicle()->type() == Vehicle::VT_MOTORCYCLE) {
+		while (node->getLink()->getVehicle()->type() == Vehicle::VT_MOTORCYCLE) {
 			node = node->getLink();
 		}
 
