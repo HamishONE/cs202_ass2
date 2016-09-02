@@ -530,6 +530,179 @@ TestResult test_IntersectionTwoInOpposing() {
 
     return TR_PASS;
 }
+
+TestResult test_TrafficNetwork() {
+
+	Intersection i1, i2, i3, i4;
+	Lane *lanes[12];
+	for (int i=0; i<12; i++) lanes[i] = new ExpressLane();
+
+	i1.connectNorth(lanes[0], Intersection::LD_INCOMING);
+	i1.connectEast(lanes[3], Intersection::LD_OUTGOING);
+	i1.connectSouth(lanes[5], Intersection::LD_INCOMING);
+	i1.connectWest(lanes[2], Intersection::LD_INCOMING);
+
+	i2.connectNorth(lanes[1], Intersection::LD_INCOMING);
+	i2.connectEast(lanes[4], Intersection::LD_OUTGOING);
+	i2.connectSouth(lanes[6], Intersection::LD_OUTGOING);
+	i2.connectWest(lanes[3], Intersection::LD_INCOMING);
+
+	i3.connectNorth(lanes[6], Intersection::LD_INCOMING);
+	i3.connectEast(lanes[9], Intersection::LD_OUTGOING);
+	i3.connectSouth(lanes[11], Intersection::LD_OUTGOING);
+	i3.connectWest(lanes[8], Intersection::LD_OUTGOING);
+
+	i4.connectNorth(lanes[5], Intersection::LD_OUTGOING);
+	i4.connectEast(lanes[8], Intersection::LD_INCOMING);
+	i4.connectSouth(lanes[10], Intersection::LD_OUTGOING);
+	i4.connectWest(lanes[7], Intersection::LD_INCOMING);
+
+	/* Test with a single car to go around the loop */
+
+	Vehicle* v1 = new Vehicle(Vehicle::VT_CAR, 1);
+	v1->turnLeft();
+	v1->turnRight();
+	v1->turnRight();
+	v1->turnRight();
+	v1->turnRight();
+	v1->turnStraight();
+	lanes[0]->enqueue(v1);
+
+	i1.simulate();
+	i2.simulate();
+	i3.simulate();
+	i4.simulate();
+	i1.simulate();
+	i2.simulate();
+
+	for (int i=0; i<12; i++) {
+		ASSERT(i == 4 || lanes[i]->dequeue() == 0);
+	}
+	ASSERT(lanes[4]->dequeue() == v1);
+	ASSERT(v1->nextTurn() == Vehicle::TD_INVALID);
+
+	delete v1;
+	for (int i=0; i<12; i++) delete lanes[i];
+
+	return TR_PASS;
+}
+
+// from piazza @301
+TestResult test_Intersections(){
+
+	// Create Intersections
+
+	Intersection intersection1;
+	Intersection intersection2;
+	Intersection intersection3;
+	Intersection intersection4;
+
+	Vehicle* v1 = new Vehicle(Vehicle::VT_CAR, 1);
+	v1->turnStraight();
+	v1->turnLeft();
+	Vehicle* v2 = new Vehicle(Vehicle::VT_BUS, 10);
+	v2->turnStraight();
+	v2->turnStraight();
+	Vehicle* v3 = new Vehicle(Vehicle::VT_CAR, 1);
+	v3->turnLeft();
+	v3->turnRight();
+	v3->turnStraight();
+	Vehicle* v4 = new Vehicle(Vehicle::VT_CAR, 1);
+	v4->turnStraight();
+	v4->turnLeft();
+
+	// Creating first intersection
+
+	Lane* North1 = new SimpleLane();
+	North1->enqueue(v2);
+	Lane* West1 = new SimpleLane();
+	West1->enqueue(v1);
+	Lane* roadTop = new SimpleLane();
+	Lane* roadLeft = new SimpleLane();
+
+
+	ASSERT(intersection1.connectNorth(North1, Intersection::LD_INCOMING) == 0);
+	ASSERT(intersection1.connectEast(roadTop, Intersection::LD_OUTGOING) == 0);
+	ASSERT(intersection1.connectSouth(roadLeft, Intersection::LD_OUTGOING) == 0);
+	ASSERT(intersection1.connectWest(West1, Intersection::LD_INCOMING) == 0);
+
+	// Creating second intersection
+
+	Lane* North2 = new SimpleLane();
+	Lane* East2 = new SimpleLane();
+	East2->enqueue(v3);
+	Lane* roadRight = new SimpleLane();
+
+	ASSERT(intersection2.connectNorth(North2, Intersection::LD_OUTGOING) == 0);
+	ASSERT(intersection2.connectEast(East2, Intersection::LD_INCOMING) == 0);
+	ASSERT(intersection2.connectSouth(roadRight, Intersection::LD_OUTGOING) == 0);
+	ASSERT(intersection2.connectWest(roadTop, Intersection::LD_INCOMING) == 0);
+
+
+	// Creating third intersection
+
+	Lane* South3 = new SimpleLane();
+	Lane* East3= new SimpleLane();
+	East3->enqueue(v4);
+	Lane* roadBot = new SimpleLane();
+
+	ASSERT(intersection3.connectNorth(roadRight, Intersection::LD_INCOMING) == 0);
+	ASSERT(intersection3.connectEast(East3, Intersection::LD_INCOMING) == 0);
+	ASSERT(intersection3.connectSouth(South3, Intersection::LD_OUTGOING) == 0);
+	ASSERT(intersection3.connectWest(roadBot, Intersection::LD_OUTGOING) == 0);
+
+	// Creating fourth intersection
+
+	Lane* South4 = new SimpleLane();
+	Lane* West4 = new SimpleLane();
+
+	ASSERT(intersection4.connectNorth(roadLeft, Intersection::LD_INCOMING) == 0);
+	ASSERT(intersection4.connectEast(roadBot, Intersection::LD_INCOMING) == 0);
+	ASSERT(intersection4.connectSouth(South4, Intersection::LD_OUTGOING) == 0);
+	ASSERT(intersection4.connectWest(West4, Intersection::LD_OUTGOING) == 0);
+
+	//cout << "Intersections Created" << endl;
+	//cout << "Time to simulate" << endl;
+
+	intersection1.simulate();
+	ASSERT(North1->front() == 0);
+	ASSERT(West1->front() == 0);
+	ASSERT(roadTop->back() == v1);
+	ASSERT(roadLeft->back() == v2);
+
+
+	intersection2.simulate();
+	ASSERT(North2->back() == v1);
+	ASSERT(East2->front() == 0);
+	ASSERT(roadRight->back() == v3);
+	ASSERT(roadTop->back() == 0);
+
+
+	 for (int i=0; i<2; i++){
+		 intersection3.simulate();
+	 }
+
+	 ASSERT(roadRight->back() == 0);
+	ASSERT(East3->back() == 0);
+	ASSERT(roadBot->back() == v3);
+	ASSERT(roadBot->front() == v4);
+	ASSERT(South3->back() == 0);
+
+
+	 for (int i=0; i<3; i++){
+		 intersection4.simulate();
+	 }
+
+	 ASSERT(roadLeft->back() == 0);
+	 ASSERT(roadBot->back() == 0);
+	 ASSERT(South4->front() == v2);
+	 ASSERT(South4->back() == v4);
+	 ASSERT(West4->back() == v3);
+
+	//cout << "THe Largest Case has been passed" << endl;
+	return TR_PASS;
+}
+
 #endif /*ENABLE_T2_TESTS*/
 
 /*
@@ -554,12 +727,15 @@ vector<TestResult (*)()> generateTests() {
     tests.push_back(&test_IntersectionOverwrite);
     tests.push_back(&test_IntersectionOneIn);
     tests.push_back(&test_IntersectionTwoInOpposing);
+    tests.push_back(&test_TrafficNetwork);
+    tests.push_back(&test_Intersections);
 #endif /*ENABLE_T2_TESTS*/
 
     return tests;
 }
 
 int main(int argc, char const* argv[]) {
+
     // If one or more test numbers are passed as command-line parameters, execute them
     vector<TestResult (*)()> tests_to_run = generateTests();
     unsigned int pass_count = 0;
