@@ -703,6 +703,53 @@ TestResult test_Intersections(){
 	return TR_PASS;
 }
 
+//from piazza @376
+TestResult test_The_Filip_Simulate() {
+	Intersection intersection;
+	// vehicles for testing
+	Vehicle* v1 = new Vehicle(Vehicle::VT_CAR, 1);
+	v1->turnStraight();//v1 turns straight
+	Vehicle* v2 = new Vehicle(Vehicle::VT_CAR, 10);
+	v2->turnLeft();//v2 turns left
+	Vehicle* v3 = new Vehicle(Vehicle::VT_CAR, 1);
+	v3->turnRight();//v3 turns right
+	Lane* roadInNorth = new SimpleLane();
+	roadInNorth->enqueue(v1);//v1 should be in north
+	Lane* roadInWest = new SimpleLane();
+	roadInWest->enqueue(v3);//v3 should be in west
+	Lane* roadInEast = new SimpleLane();
+	roadInEast->enqueue(v2);//v2 should be in east
+	Lane* roadOutSouth = new SimpleLane();
+
+	ASSERT(intersection.connectNorth(roadInNorth, Intersection::LD_INCOMING) == 0); // entry
+	ASSERT(intersection.connectEast(roadInEast, Intersection::LD_INCOMING) == 0); // entry
+	ASSERT(intersection.connectSouth(roadOutSouth, Intersection::LD_OUTGOING) == 0); // exit
+	ASSERT(intersection.connectWest(roadInWest, Intersection::LD_INCOMING) == 0); // entry
+	// check intersection is valid
+	ASSERT(intersection.valid());
+	//simulate and check results
+	intersection.simulate();
+	ASSERT(roadInNorth->front() == 0);
+	//simulate and check results
+	intersection.simulate();
+	ASSERT(roadInEast->front() == 0);
+	//simulate and run
+	intersection.simulate();
+	ASSERT(roadInWest->front() == 0);
+	ASSERT(roadOutSouth->front() == v1);
+	ASSERT(roadOutSouth->dequeue() == v1);
+	ASSERT(roadOutSouth->dequeue() == v2);
+	ASSERT(roadOutSouth->dequeue() == v3);
+	delete roadInNorth;
+	delete roadInEast;
+	delete roadOutSouth;
+	delete roadInWest;
+	delete v1;
+	delete v2;
+	delete v3;
+	return TR_PASS;
+}
+
 #endif /*ENABLE_T2_TESTS*/
 
 /*
@@ -729,6 +776,7 @@ vector<TestResult (*)()> generateTests() {
     tests.push_back(&test_IntersectionTwoInOpposing);
     tests.push_back(&test_TrafficNetwork);
     tests.push_back(&test_Intersections);
+    tests.push_back(&test_The_Filip_Simulate);
 #endif /*ENABLE_T2_TESTS*/
 
     return tests;
