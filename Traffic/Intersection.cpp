@@ -89,17 +89,17 @@ void Intersection::simulate() {
 		// Find the lane the vehicle wants to turn into
 		unsigned int newLane;
 		switch (vehicle->nextTurn()) {
-		case Vehicle::TD_RIGHT:
-			newLane = i + 3;
-			break;
-		case Vehicle::TD_LEFT:
-			newLane = i + 1;
-			break;
-		case Vehicle::TD_STRAIGHT:
-			newLane = i + 2;
-			break;
-		default:
-			return;
+			case Vehicle::TD_RIGHT:
+				newLane = i + 3;
+				break;
+			case Vehicle::TD_LEFT:
+				newLane = i + 1;
+				break;
+			case Vehicle::TD_STRAIGHT:
+				newLane = i + 2;
+				break;
+			default:
+				return;
 		}
 		if (newLane > 3) newLane -= 4;
 
