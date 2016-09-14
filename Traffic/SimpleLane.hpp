@@ -2,7 +2,7 @@
 #define SIMPLELANE_HPP
 
 #include "Lane.hpp"
-#include "Vehicle.hpp"
+//#include "Vehicle.hpp"
 
 /*
 The SimpleLane class simulates a single lane of a road. It is a FIFO queue for Vehicle objects.
@@ -63,10 +63,11 @@ protected:
     class Node {
 	public:
 		Node(Vehicle *v, Node *l);
-		~Node();
+		~Node() {};
 		Vehicle* getVehicle() const;
 		Node* getLink() const;
 		void changeLink(Node *newLink);
+		void deleteAll();
 	private:
 		Vehicle *vehicle;
 		Node *link;

@@ -1,4 +1,5 @@
 #include "SimpleLane.hpp"
+#include "Vehicle.hpp"
 
 SimpleLane::SimpleLane() {
 
@@ -9,8 +10,8 @@ SimpleLane::SimpleLane() {
 
 SimpleLane::~SimpleLane() {
 
-	// Call delete for first node, others will be deleted recursively
-	delete frontQueue;
+	// Will delete nodes recursively
+	if (frontQueue != 0) frontQueue->deleteAll();
 }
 
 const Vehicle* SimpleLane::front() const {
@@ -57,8 +58,15 @@ Vehicle* SimpleLane::dequeue() {
 	// Otherwise store the vehicle at the start of the queue to return later
 	Vehicle *toReturn = frontQueue->getVehicle();
 
+	SimpleLane::Node *oldFrontNode = frontQueue;
+
 	// Set the front of the queue to the second vehicle in the queue
 	frontQueue = frontQueue->getLink();
+
+	// Delete the Node object
+	//oldFrontNode->changeLink(0);
+	delete oldFrontNode;
+
 
 	// If the queue is now empty set the back queue pointer to null
 	if (frontQueue == 0) backQueue = 0;
@@ -94,8 +102,9 @@ unsigned int SimpleLane::count() const {
 
 SimpleLane::Node::Node(Vehicle *v, Node *l) : vehicle(v), link(l) {}
 
-SimpleLane::Node::~Node() {
-	delete link; // will delete nodes recursively
+void SimpleLane::Node::deleteAll() {
+	if (link != 0) link->deleteAll(); // will delete nodes recursively
+	delete link;
 	delete vehicle;
 }
 
