@@ -1,5 +1,6 @@
 #include "SimpleLane.hpp"
 #include "Vehicle.hpp"
+#include "Node.hpp"
 
 SimpleLane::SimpleLane() {
 
@@ -58,7 +59,7 @@ Vehicle* SimpleLane::dequeue() {
 	// Otherwise store the vehicle at the start of the queue to return later
 	Vehicle *toReturn = frontQueue->getVehicle();
 
-	SimpleLane::Node *oldFrontNode = frontQueue;
+	Node *oldFrontNode = frontQueue;
 
 	// Set the front of the queue to the second vehicle in the queue
 	frontQueue = frontQueue->getLink();
@@ -96,26 +97,4 @@ unsigned int SimpleLane::count() const {
 
 	// Once the loop breaks return the counter
 	return counter;
-}
-
-/* Implementation of the Node class follows */
-
-SimpleLane::Node::Node(Vehicle *v, Node *l) : vehicle(v), link(l) {}
-
-void SimpleLane::Node::deleteAll() {
-	if (link != 0) link->deleteAll(); // will delete nodes recursively
-	delete link;
-	delete vehicle;
-}
-
-Vehicle* SimpleLane::Node::getVehicle() const {
-	return vehicle;
-}
-
-SimpleLane::Node* SimpleLane::Node::getLink() const {
-	return link;
-}
-
-void SimpleLane::Node::changeLink(Node *newLink) {
-	link = newLink;
 }

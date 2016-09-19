@@ -1,5 +1,6 @@
 #include "ExpressLane.hpp"
 #include "Vehicle.hpp"
+#include "Node.hpp"
 
 void ExpressLane::enqueue(Vehicle* vehicle) {
 
