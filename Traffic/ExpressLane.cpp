@@ -13,8 +13,8 @@ void ExpressLane::enqueue(Vehicle* vehicle) {
 		return;
 	}
 
-	// Check if the vehicle is a motorcycle
-	if (vehicle->type() == Vehicle::VT_MOTORCYCLE) {
+	// Check if the vehicle is a motorcycle and the queue is not all motorcycles
+	if (vehicle->type() == Vehicle::VT_MOTORCYCLE && backQueue->getVehicle()->type() != Vehicle::VT_MOTORCYCLE) {
 
 		// If there are no motorcycles already in the queue add the new node to the front of the queue
 		if (frontQueue->getVehicle()->type() != Vehicle::VT_MOTORCYCLE) {
