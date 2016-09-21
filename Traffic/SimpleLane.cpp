@@ -12,25 +12,36 @@ SimpleLane::SimpleLane() {
 SimpleLane::~SimpleLane() {
 
 	// Will delete nodes recursively
-	if (frontQueue != 0) frontQueue->deleteAll();
+	if (frontQueue != 0) {
+		frontQueue->deleteAll();
+		delete frontQueue;
+	}
 }
 
 const Vehicle* SimpleLane::front() const {
 
 	// If no vehicles in lane return null
-	if (frontQueue == 0) return 0;
+	if (frontQueue == 0) {
+		return 0;
+	}
 
 	// Otherwise return the front vehicle
-	else return frontQueue->getVehicle();
+	else {
+		return frontQueue->getVehicle();
+	}
 }
 
 const Vehicle* SimpleLane::back() const {
 
 	// If no vehicles in lane return null
-	if (backQueue == 0) return 0;
+	if (backQueue == 0) {
+		return 0;
+	}
 
 	// Otherwise return the back vehicle
-	else return backQueue->getVehicle();
+	else {
+		return backQueue->getVehicle();
+	}
 }
 
 void SimpleLane::enqueue(Vehicle* vehicle) {
@@ -54,7 +65,9 @@ void SimpleLane::enqueue(Vehicle* vehicle) {
 Vehicle* SimpleLane::dequeue() {
 
 	// If no vehicles in lane return null
-	if (frontQueue == 0) return 0;
+	if (frontQueue == 0) {
+		return 0;
+	}
 
 	// Otherwise store the vehicle at the start of the queue to return later
 	Vehicle *toReturn = frontQueue->getVehicle();
@@ -65,20 +78,25 @@ Vehicle* SimpleLane::dequeue() {
 	frontQueue = frontQueue->getLink();
 
 	// Delete the Node object
-	//oldFrontNode->changeLink(0);
 	delete oldFrontNode;
 
 
 	// If the queue is now empty set the back queue pointer to null
-	if (frontQueue == 0) backQueue = 0;
+	if (frontQueue == 0) {
+		backQueue = 0;
+	}
 
 	// Return the previous front of the queue stored earlier
 	return toReturn;
 }
 
 bool SimpleLane::empty() const {
-	if (frontQueue == 0) return true;
-	else return false;
+
+	if (frontQueue == 0) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 unsigned int SimpleLane::count() const {

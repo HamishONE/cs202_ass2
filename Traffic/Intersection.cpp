@@ -15,7 +15,9 @@ bool Intersection::valid() {
 
 	// Loop through the four lanes and if any are null the intersection is not valid
 	for (unsigned int i=0; i<4; i++) {
-		if (lanes[i] == 0) return false;
+		if (lanes[i] == 0) {
+			return false;
+		}
 	}
 
 	// Otherwise the intersection is valid
@@ -55,32 +57,45 @@ Lane* Intersection::connectWest(Lane* lane, LaneDirection direction) {
 void Intersection::simulate() {
 
 	// Loop through the four lanes and find if any vehicles are turning left or going straight
-	bool areLeft = false, areStraight = false;
+	bool areLeft = false;
+	bool areStraight = false;
 	for (unsigned int i=0; i<4; i++) {
 
 		// If the lane contains no vehicles or is an outgoing street skip to the next lane
-		if(lanes[i]->front() == 0 || directions[i] == LD_OUTGOING) continue;
+		if(lanes[i]->front() == 0 || directions[i] == LD_OUTGOING) {
+			continue;
+		}
 
 		// Set booleans as appropriate
-		if (lanes[i]->front()->nextTurn() == Vehicle::TD_LEFT) areLeft = true;
-		if (lanes[i]->front()->nextTurn() == Vehicle::TD_STRAIGHT) areStraight = true;
+		if (lanes[i]->front()->nextTurn() == Vehicle::TD_LEFT) {
+			areLeft = true;
+		}
+		if (lanes[i]->front()->nextTurn() == Vehicle::TD_STRAIGHT) {
+			areStraight = true;
+		}
 	}
 
 	// Loop through the four lanes and process the vehicles
 	for (unsigned int i=0; i<4; i++) {
 
 		// If the lane contains no vehicles or is an outgoing street skip to the next lane
-		if(lanes[i]->front() == 0 || directions[i] == LD_OUTGOING) continue;
+		if(lanes[i]->front() == 0 || directions[i] == LD_OUTGOING) {
+			continue;
+		}
 
 		// If the vehicle wants to turn right and there are people going straight or turning
 		// left skip to the next lane
 		if (lanes[i]->front()->nextTurn() == Vehicle::TD_RIGHT) {
-			if (areLeft || areStraight) continue;
+			if (areLeft || areStraight) {
+				continue;
+			}
 		}
 
 		// If the vehicle wants to turn left and there are people going straight skip to the next lane
 		if (lanes[i]->front()->nextTurn() == Vehicle::TD_LEFT) {
-			if (areStraight) continue;
+			if (areStraight) {
+				continue;
+			}
 		}
 
 		// Otherwise remove the vehicle from the lane
@@ -101,7 +116,9 @@ void Intersection::simulate() {
 			default:
 				return;
 		}
-		if (newLane > 3) newLane -= 4;
+		if (newLane > 3) {
+			newLane = newLane - 4;
+		}
 
 		// Add the vehicle to this lane
 		lanes[newLane]->enqueue(vehicle);

@@ -4,7 +4,13 @@
 Node::Node(Vehicle *v, Node *l) : vehicle(v), link(l) {}
 
 void Node::deleteAll() {
-	if (link != 0) link->deleteAll(); // will delete nodes recursively
+
+	// Call on all other nodes recursively
+	if (link != 0) {
+		link->deleteAll();
+	}
+
+	// Delete this nodes link and associated vehicle
 	delete link;
 	delete vehicle;
 }

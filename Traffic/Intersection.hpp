@@ -83,7 +83,7 @@ public:
 
 private:
 
-    // Enumeration type formalizes integer logic for the 4 compass points
+    // Enumeration type formalises integer logic for the 4 compass points
     enum CompassPoint {NORTH=0, EAST=1, SOUTH=2, WEST=3};
 
     // Arrays store lane pointer and directions for each compass point
