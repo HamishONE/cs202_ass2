@@ -12,56 +12,56 @@ dequeue() method.
 */
 class SimpleLane : public Lane {
 public:
-    /*
-    Create a new empty traffic lane. Remember to initialize member variables where necessary.
-    */
-    SimpleLane();
+	/*
+	Create a new empty traffic lane. Remember to initialize member variables where necessary.
+	*/
+	SimpleLane();
 
-    /*
-    Destroy the lane; the destructor should delete *all* vehicles currently enqueued in the lane.
-    */
-    virtual ~SimpleLane();
+	/*
+	Destroy the lane; the destructor should delete *all* vehicles currently enqueued in the lane.
+	*/
+	virtual ~SimpleLane();
 
-    /*
-    Add a Vehicle to the back of the lane.
-    */
-    virtual void enqueue(Vehicle* vehicle);
+	/*
+	Add a Vehicle to the back of the lane.
+	*/
+	virtual void enqueue(Vehicle* vehicle);
 
-    /*
-    Remove a vehicle from the front of the lane, returning a pointer to the removed vehicle. If there is no vehicle to
-    remove, this method should return 0 instead.
-    */
-    virtual Vehicle* dequeue();
+	/*
+	Remove a vehicle from the front of the lane, returning a pointer to the removed vehicle. If there is no vehicle to
+	remove, this method should return 0 instead.
+	*/
+	virtual Vehicle* dequeue();
 
-    /*
-    Return whether or not the lane is empty; the returned value is `true` if there are no vehicles in the lane, or
-    `false` if there is at least one vehicle in the lane.
-    */
-    virtual bool empty() const;
+	/*
+	Return whether or not the lane is empty; the returned value is `true` if there are no vehicles in the lane, or
+	`false` if there is at least one vehicle in the lane.
+	*/
+	virtual bool empty() const;
 
-    /*
-    Get the exact number of vehicles currently in the lane; e.g. should return 0 if there are no vehicles in the lane,
-    or 4 if there are four vehicles in the lane.
-    */
-    virtual unsigned int count() const;
+	/*
+	Get the exact number of vehicles currently in the lane; e.g. should return 0 if there are no vehicles in the lane,
+	or 4 if there are four vehicles in the lane.
+	*/
+	virtual unsigned int count() const;
 
-    /*
-    Return a pointer to the vehicle at the front of the lane without removing it from the lane. If there are no vehicles
-    in the lane this method should return 0.
-    */
-    virtual const Vehicle* front() const;
+	/*
+	Return a pointer to the vehicle at the front of the lane without removing it from the lane. If there are no vehicles
+	in the lane this method should return 0.
+	*/
+	virtual const Vehicle* front() const;
 
-    /*
-    Return a pointer to the vehicle at the back of the lane without removing it from the lane. If there are no vehicles
-    in the lane this method should return 0.
-    */
-    virtual const Vehicle* back() const;
+	/*
+	Return a pointer to the vehicle at the back of the lane without removing it from the lane. If there are no vehicles
+	in the lane this method should return 0.
+	*/
+	virtual const Vehicle* back() const;
 
 protected:
 
-    // Pointers to the front and back of the queue
-    Node *frontQueue;
-    Node *backQueue;
+	// Pointers to the front and back of the queue
+	Node *frontQueue;
+	Node *backQueue;
 };
 
 #endif /* end of include guard: SIMPLELANE_HPP */
