@@ -178,6 +178,39 @@ TestResult test_SimpleLaneEnqueue() {
     ASSERT(lane.back() == m1);
     ASSERT(lane.front() == v1);
 
+    // vehicles should be deleted by the lane
+    return TR_PASS;
+}
+
+// modified by hamish
+TestResult test_SimpleLaneEnqueueModified() {
+    SimpleLane lane;
+    Vehicle* v1 = new Vehicle(Vehicle::VT_CAR, 1);
+    Vehicle* v2 = new Vehicle(Vehicle::VT_CAR, 2);
+    Vehicle* v3 = new Vehicle(Vehicle::VT_BUS, 3);
+    Vehicle* m1 = new Vehicle(Vehicle::VT_MOTORCYCLE, 1);
+
+    lane.enqueue(v1);
+    ASSERT(!lane.empty())
+    ASSERT(lane.count() == 1)
+    ASSERT(lane.back() == v1);
+    ASSERT(lane.front() == v1);
+    lane.enqueue(v2);
+    ASSERT(!lane.empty())
+    ASSERT(lane.count() == 2)
+    ASSERT(lane.back() == v2);
+    ASSERT(lane.front() == v1);
+    lane.enqueue(v3);
+    ASSERT(!lane.empty())
+    ASSERT(lane.count() == 3)
+    ASSERT(lane.back() == v3);
+    ASSERT(lane.front() == v1);
+    lane.enqueue(m1);
+    ASSERT(!lane.empty())
+    ASSERT(lane.count() == 4)
+    ASSERT(lane.back() == m1);
+    ASSERT(lane.front() == v1);
+
     ASSERT(lane.dequeue() == v1);
 	ASSERT(!lane.empty())
 	ASSERT(lane.count() == 3)
@@ -199,12 +232,16 @@ TestResult test_SimpleLaneEnqueue() {
 	ASSERT(lane.back() == 0);
 	ASSERT(lane.front() == 0);
 
-    // vehicles should be deleted by the lane
+    // vehicles need to be deleted by us
+	delete v1;
+	delete v2;
+	delete v3;
+	delete m1;
 
     return TR_PASS;
 }
 
-// from piazza @418
+// from piazza @418, modified by hamish
 TestResult test_SimpleLaneDequeue() {
 	SimpleLane lane;
 	Vehicle* v1 = new Vehicle(Vehicle::VT_CAR, 1);
@@ -235,6 +272,12 @@ TestResult test_SimpleLaneDequeue() {
 	ASSERT(lane.count() == 0)
 	ASSERT(lane.front() == 0);
 	ASSERT(lane.back() == 0);
+
+	// vehicles need to be deleted by us
+	delete v1;
+	delete v2;
+	delete v3;
+	delete m1;
 
     return TR_PASS;
 }
@@ -317,12 +360,17 @@ TestResult test_ExpressLaneEnqueue() {
 	ASSERT(lane.front() == 0);
 	ASSERT(lane.dequeue() == 0);
 
-    // vehicles should be deleted by the lane
+	// vehicles need to be deleted by us
+	delete v1;
+	delete v2;
+	delete v3;
+	delete m1;
+	delete m2;
 
     return TR_PASS;
 }
 
-// from piazza @418
+// from piazza @418, modified by hamish
 TestResult test_ExpressLaneEnqueue2() {
     ExpressLane lane;
     Vehicle* v1 = new Vehicle(Vehicle::VT_CAR, 1);
@@ -411,7 +459,9 @@ TestResult test_ExpressLaneEnqueue2() {
     ASSERT(lane4.dequeue() == m5);
     ASSERT(lane4.dequeue() == m6);
 
-    // vehicles should be deleted by the lane
+    // vehicles should be deleted by the lane except m5 and m6
+    delete m5;
+    delete m6;
 
     return TR_PASS;
 }
@@ -474,7 +524,6 @@ TestResult test_IntersectionOverwrite() {
     ASSERT(!intersection.valid());
     ASSERT(intersection.connectWest(0, Intersection::LD_OUTGOING) == l5);
     ASSERT(!intersection.valid());
-
 
     delete l1;
     delete l2;
@@ -753,7 +802,7 @@ TestResult test_IntersectionTwoInAdjacent() {
     return TR_PASS;
 }
 
-// from piazza @418
+// from piazza @418, modified by hamish
 TestResult test_IntersectionThreeIn() {
     Intersection intersection;
 
@@ -847,6 +896,7 @@ TestResult test_IntersectionThreeIn() {
     delete v6;
     delete v7;
     delete v8;
+    delete v9;
 
     return TR_PASS;
 }
@@ -1015,7 +1065,7 @@ TestResult test_TrafficNetwork2() {
     return TR_PASS;
 }
 
-// from piazza @301
+// from piazza @301, modified by hamish
 TestResult test_Intersections(){
 
 	// Create Intersections
@@ -1128,6 +1178,20 @@ TestResult test_Intersections(){
 	 ASSERT(West4->back() == v3);
 
 	//cout << "THe Largest Case has been passed" << endl;
+
+	delete North1;
+	delete West1;
+	delete roadTop;
+	delete roadLeft;
+	delete North2;
+	delete East2;
+	delete roadRight;
+	delete South3;
+	delete East3;
+	delete roadBot;
+	delete South4;
+	delete West4;
+
 	return TR_PASS;
 }
 
@@ -1194,6 +1258,7 @@ vector<TestResult (*)()> generateTests() {
     tests.push_back(&test_SimpleLaneConstruction);
     tests.push_back(&test_SimpleLaneInitialState);
     tests.push_back(&test_SimpleLaneEnqueue);
+    tests.push_back(&test_SimpleLaneEnqueueModified);
     tests.push_back(&test_SimpleLaneDequeue);
     tests.push_back(&test_ExpressLaneInitialState);
     tests.push_back(&test_ExpressLaneEnqueue);
